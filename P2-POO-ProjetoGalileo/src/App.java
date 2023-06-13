@@ -1,7 +1,9 @@
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.DoubleSummaryStatistics;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -31,12 +33,16 @@ public class App {
         opcao = sc.nextInt();
 
         if(opcao==1){
+
+
+            System.out.println("\n** -|Cadastro de produto|- **\n");
+
             System.out.println("Digite o código do produto: ");
             String codigo = sc.next();
 
             System.out.println("Digite o nome do produto: ");
             String nome= sc.next();
-
+            
             System.out.println("Digite o valor do produto: ");
             Double valor = sc.nextDouble();
 
@@ -47,11 +53,11 @@ public class App {
 
             System.out.println("\n**Produto Cadastrado**\n");
             
-
-
+ 
         }
 
         else if(opcao==2){
+            System.out.println("\n** -|Consultar produto|- **\n");
             System.out.println("Digite o código do produto: ");
             String codigo = sc.next();
 
@@ -62,7 +68,7 @@ public class App {
             }
             else{
                 for (Produto produto : novaList) {
-                    System.out.println("\nProdutos cadastrados: \n");
+                    System.out.println("\n** -|Produtos cadastrados|- **\n");
                     System.out.println(produto);
                     
                 }
@@ -72,7 +78,7 @@ public class App {
             
     
         else if(opcao==3){
-            System.out.println("\nProdutos Cadastrados: \n");
+            System.out.println("\n** -|Produtos cadastrados|- **\n");
             for (Produto produto : listaProduto) {
                 System.out.println(produto);
             }
@@ -87,6 +93,9 @@ public class App {
         }
 
         else if(opcao==4){
+
+            System.out.println("\n** -|Vendas por período|- **\n");
+
             
             System.out.println("Digite a primeira data: " + "| Formato: dd/MM/yyyy");
             String primeiraDt = sc.next();
@@ -94,28 +103,30 @@ public class App {
             System.out.println("Digite a segunda data: " + "| Formato: dd/MM/yyyy");
             String segundaDt = sc.next();
 
-            DoubleSummaryStatistics valores = listaProduto.stream()
-            .filter(p -> p instanceof Produto)
-            .collect(Collectors.summarizingDouble(Produto::getValor));
-
+            
+            double valorTotal = 0.0;
+            double valorMedio = 0.0;
+            int quantidadeVendas = 0;
             LocalDate primeiraData = LocalDate.parse(primeiraDt, df);
             LocalDate segundaData = LocalDate.parse(segundaDt, df);
+            
 
             for (Venda venda : listaVendas) {
-                if(venda.getDataDaVenda().isAfter(primeiraData) && venda.getDataDaVenda().isBefore(segundaData));{
-                    System.out.println(venda);
-                    
-                }
-                 
-            }
+            if(venda.getDataDaVenda().compareTo(primeiraData) >= 0 && venda.getDataDaVenda().compareTo(segundaData) < 1){
+            System.out.println(venda);
+            valorTotal += venda.getProdutoVendido().getValor() * venda.getqtdVendida();
+            valorMedio += valorTotal;
+            quantidadeVendas++;
+            System.out.println("- Valor total da venda: " + valorTotal);
             
-            System.out.println("\n- Valor médio das vendas: " + valores.getAverage());
-            System.out.println("- Valor total das vendas: " + valores.getSum() + "\n");
-            
-        }
-           
+         }
+    }
+        double mediaVendas = valorMedio / quantidadeVendas;
+        System.out.println("\n- Valor médio das vendas: " + mediaVendas);
+    }         
 
         else if(opcao==5){
+            System.out.println("\n** -|Realizar vendas|- **\n");
             System.out.println("Digite o código do produto que deseja vender: ");
             String codigoVenda = sc.next();
 
@@ -141,14 +152,15 @@ public class App {
                 else {
 
                 listaVendas.add(venda);
+                listaVendas.sort(Comparator.comparing(s -> s .getDataDaVenda()));
                 produto.setQtdEstoque(produto.getQtdEstoque() - qtdVenda);
                 System.out.println("\n **Venda Realizada** \n");
-        }
+                }
                 
-            }
+     }
 
          
-        }
+}
 
     }while(opcao!=0);
 
