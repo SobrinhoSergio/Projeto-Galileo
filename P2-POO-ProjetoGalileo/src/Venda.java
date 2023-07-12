@@ -42,8 +42,5 @@ public class Venda {
     public void setqtdVendida(int qtdVendida) {
         this.qtdVendida = qtdVendida;
     }
-
-
-    
     
 }
